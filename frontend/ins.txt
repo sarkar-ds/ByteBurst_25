@@ -1,0 +1,1653 @@
+import React from 'react';
+import { Award, Users, Calendar, Target } from 'lucide-react';
+
+export default function About() {
+  const stats = [
+    { icon: Calendar, label: 'Years Running', value: '15+' },
+    { icon: Users, label: 'Participants', value: '500+' },
+    { icon: Award, label: 'Events', value: '20+' },
+    { icon: Target, label: 'Prize Pool', value: '₹1L+' }
+  ];
+
+  return (
+    <section id="about" className="py-20 bg-gradient-to-br from-purple-900 to-blue-900 relative">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-16">
+          <h2 className="text-4xl sm:text-5xl font-bold mb-6">
+            <span className="bg-gradient-to-r from-purple-400 via-blue-500 to-green-400 bg-clip-text text-transparent">
+              About TechnoKratos
+            </span>
+          </h2>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-16">
+          <div>
+            <h3 className="text-3xl font-bold text-white mb-6">
+              Where Technology Meets Culture
+            </h3>
+            <div className="space-y-6 text-gray-300 text-lg leading-relaxed">
+              <p>
+                TechnoKratos is the flagship annual techno-cultural festival of 
+                Madan Mohan Malaviya University of Technology (MMMUT), Gorakhpur. 
+                For over a decade, we've been at the forefront of celebrating the 
+                perfect fusion of technology and culture.
+              </p>
+              <p>
+                Our festival brings together brilliant minds from across the country 
+                to compete, collaborate, and celebrate innovation. From intense coding 
+                competitions to creative cultural performances, TechnoKratos offers 
+                a platform for every talent to shine.
+              </p>
+              <p>
+                Join us as we continue to push boundaries, foster innovation, and 
+                create unforgettable memories in the heart of Uttar Pradesh's 
+                premier technical institution.
+              </p>
+            </div>
+          </div>
+
+          <div className="relative">
+            <div className="bg-gradient-to-br from-blue-500/20 to-purple-500/20 backdrop-blur-sm border border-white/10 rounded-2xl p-8">
+              <h4 className="text-2xl font-bold text-white mb-6">
+                About MMMUT Gorakhpur
+              </h4>
+              <div className="space-y-4 text-gray-300">
+                <p>
+                  Madan Mohan Malaviya University of Technology, established in 2013, 
+                  is a premier technical institution in Uttar Pradesh, India.
+                </p>
+                <p>
+                  Located in the historic city of Gorakhpur, MMMUT has rapidly 
+                  emerged as a center of excellence in engineering education, 
+                  research, and innovation.
+                </p>
+                <p>
+                  The university is committed to nurturing future technologists 
+                  and leaders who will drive India's technological advancement.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Stats Section */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
+          {stats.map((stat, index) => (
+            <div
+              key={index}
+              className="text-center bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6 hover:bg-white/10 transition-all duration-300 hover:scale-105"
+            >
+              <stat.icon className="w-12 h-12 mx-auto mb-4 text-blue-400" />
+              <div className="text-3xl font-bold text-white mb-2">{stat.value}</div>
+              <div className="text-gray-300">{stat.label}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* Mission & Vision */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-16">
+          <div className="bg-gradient-to-br from-blue-500/10 to-purple-500/10 backdrop-blur-sm border border-white/10 rounded-xl p-8">
+            <h4 className="text-2xl font-bold text-white mb-6">Our Mission</h4>
+            <p className="text-gray-300 leading-relaxed">
+              To create a dynamic platform that bridges the gap between academic 
+              learning and practical application, fostering innovation, creativity, 
+              and collaboration among students from diverse backgrounds.
+            </p>
+          </div>
+          
+          <div className="bg-gradient-to-br from-green-500/10 to-blue-500/10 backdrop-blur-sm border border-white/10 rounded-xl p-8">
+            <h4 className="text-2xl font-bold text-white mb-6">Our Vision</h4>
+            <p className="text-gray-300 leading-relaxed">
+              To be recognized as the premier techno-cultural festival in North India, 
+              inspiring the next generation of innovators and leaders while promoting 
+              technological advancement and cultural excellence.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+import React, { useState } from 'react';
+import { X, Mail, Lock, User, GraduationCap, Building } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
+
+interface AuthModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
+  const [isLogin, setIsLogin] = useState(true);
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+    name: '',
+    rollNo: '',
+    college: ''
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const { login, signup } = useAuth();
+
+  if (!isOpen) return null;
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+      let success = false;
+      if (isLogin) {
+        success = await login(formData.email, formData.password);
+      } else {
+        success = await signup({
+          email: formData.email,
+          name: formData.name,
+          rollNo: formData.rollNo,
+          college: formData.college,
+          password: formData.password
+        });
+      }
+
+      if (success) {
+        onClose();
+        setFormData({
+          email: '',
+          password: '',
+          name: '',
+          rollNo: '',
+          college: ''
+        });
+      }
+    } catch (error) {
+      console.error('Authentication error:', error);
+    }
+
+    setIsLoading(false);
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div className="bg-gray-900 border border-gray-700 rounded-xl max-w-md w-full">
+        <div className="p-6 border-b border-gray-700">
+          <div className="flex justify-between items-center">
+            <h2 className="text-2xl font-bold text-white">
+              {isLogin ? 'Login' : 'Sign Up'}
+            </h2>
+            <button
+              onClick={onClose}
+              className="text-gray-400 hover:text-white transition-colors"
+            >
+              <X className="w-6 h-6" />
+            </button>
+          </div>
+        </div>
+
+        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+          {!isLogin && (
+            <>
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Full Name
+                </label>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <input
+                    type="text"
+                    name="name"
+                    required
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    className="w-full pl-10 pr-4 py-3 bg-white/5 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
+                    placeholder="Enter your full name"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Roll Number
+                </label>
+                <div className="relative">
+                  <GraduationCap className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <input
+                    type="text"
+                    name="rollNo"
+                    required
+                    value={formData.rollNo}
+                    onChange={handleInputChange}
+                    className="w-full pl-10 pr-4 py-3 bg-white/5 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
+                    placeholder="Enter your roll number"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  College
+                </label>
+                <div className="relative">
+                  <Building className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <input
+                    type="text"
+                    name="college"
+                    required
+                    value={formData.college}
+                    onChange={handleInputChange}
+                    className="w-full pl-10 pr-4 py-3 bg-white/5 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
+                    placeholder="Enter your college name"
+                  />
+                </div>
+              </div>
+            </>
+          )}
+
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              Email Address
+            </label>
+            <div className="relative">
+              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <input
+                type="email"
+                name="email"
+                required
+                value={formData.email}
+                onChange={handleInputChange}
+                className="w-full pl-10 pr-4 py-3 bg-white/5 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
+                placeholder="Enter your email"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              Password
+            </label>
+            <div className="relative">
+              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <input
+                type="password"
+                name="password"
+                required
+                value={formData.password}
+                onChange={handleInputChange}
+                className="w-full pl-10 pr-4 py-3 bg-white/5 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
+                placeholder="Enter your password"
+              />
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 disabled:opacity-50 text-white py-3 rounded-lg font-medium transition-all duration-200 shadow-lg shadow-blue-500/25"
+          >
+            {isLoading ? 'Please wait...' : (isLogin ? 'Login' : 'Sign Up')}
+          </button>
+
+          <div className="text-center">
+            <button
+              type="button"
+              onClick={() => setIsLogin(!isLogin)}
+              className="text-blue-400 hover:text-blue-300 text-sm transition-colors"
+            >
+              {isLogin 
+                ? "Don't have an account? Sign up" 
+                : "Already have an account? Login"
+              }
+            </button>
+          </div>
+
+          {isLogin && (
+            <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4">
+              <p className="text-sm text-blue-300 mb-2">Demo Credentials:</p>
+              <p className="text-xs text-gray-400">
+                Student: any email + any password<br />
+                Admin: admin@mmmut.ac.in + any password
+              </p>
+            </div>
+          )}
+        </form>
+      </div>
+    </div>
+  );
+}
+import React from 'react';
+import { MapPin, Phone, Mail, Clock, Facebook, Twitter, Instagram, Youtube } from 'lucide-react';
+
+export default function Contact() {
+  const contactInfo = [
+    {
+      icon: MapPin,
+      title: 'Address',
+      details: [
+        'Madan Mohan Malaviya University of Technology',
+        'Deoria Road, Gorakhpur',
+        'Uttar Pradesh - 273010, India'
+      ]
+    },
+    {
+      icon: Phone,
+      title: 'Phone',
+      details: [
+        '+91-551-2273491',
+        '+91-551-2273492',
+        '+91-9876543210 (Event Helpline)'
+      ]
+    },
+    {
+      icon: Mail,
+      title: 'Email',
+      details: [
+        'techno.kratos@mmmut.ac.in',
+        'events@mmmut.ac.in',
+        'info@mmmut.ac.in'
+      ]
+    },
+    {
+      icon: Clock,
+      title: 'Office Hours',
+      details: [
+        'Monday - Friday: 9:00 AM - 6:00 PM',
+        'Saturday: 9:00 AM - 2:00 PM',
+        'Sunday: Closed'
+      ]
+    }
+  ];
+
+  const socialLinks = [
+    { icon: Facebook, name: 'Facebook', url: '#', color: 'text-blue-400' },
+    { icon: Twitter, name: 'Twitter', url: '#', color: 'text-sky-400' },
+    { icon: Instagram, name: 'Instagram', url: '#', color: 'text-pink-400' },
+    { icon: Youtube, name: 'YouTube', url: '#', color: 'text-red-400' }
+  ];
+
+  return (
+    <section id="contact" className="py-20 bg-gradient-to-br from-blue-900 to-gray-900 relative">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-16">
+          <h2 className="text-4xl sm:text-5xl font-bold mb-6">
+            <span className="bg-gradient-to-r from-blue-400 via-purple-500 to-green-400 bg-clip-text text-transparent">
+              Get In Touch
+            </span>
+          </h2>
+          <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
+            Have questions about TechnoKratos? Need help with registration? 
+            We're here to help you every step of the way.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+          {/* Contact Information */}
+          <div className="space-y-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              {contactInfo.map((info, index) => (
+                <div
+                  key={index}
+                  className="bg-white/5 backdrop-blur-sm border border-gray-700 rounded-xl p-6 hover:bg-white/10 transition-all duration-300"
+                >
+                  <div className="flex items-center mb-4">
+                    <info.icon className="w-6 h-6 text-blue-400 mr-3" />
+                    <h3 className="text-lg font-semibold text-white">{info.title}</h3>
+                  </div>
+                  <div className="space-y-2">
+                    {info.details.map((detail, idx) => (
+                      <p key={idx} className="text-gray-300 text-sm">{detail}</p>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Social Media Links */}
+            <div className="bg-gradient-to-r from-purple-500/10 to-blue-500/10 backdrop-blur-sm border border-white/10 rounded-xl p-6">
+              <h3 className="text-xl font-bold text-white mb-6">Follow Us</h3>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                {socialLinks.map((social, index) => (
+                  <a
+                    key={index}
+                    href={social.url}
+                    className={`flex flex-col items-center p-4 bg-white/5 rounded-lg hover:bg-white/10 transition-all duration-200 hover:scale-105 ${social.color}`}
+                  >
+                    <social.icon className="w-6 h-6 mb-2" />
+                    <span className="text-sm font-medium">{social.name}</span>
+                  </a>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Contact Form & Map */}
+          <div className="space-y-8">
+            {/* Contact Form */}
+            <div className="bg-white/5 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
+              <h3 className="text-xl font-bold text-white mb-6">Send us a Message</h3>
+              <form className="space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <input
+                    type="text"
+                    placeholder="Your Name"
+                    className="w-full px-4 py-3 bg-white/5 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
+                  />
+                  <input
+                    type="email"
+                    placeholder="Your Email"
+                    className="w-full px-4 py-3 bg-white/5 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
+                  />
+                </div>
+                <input
+                  type="text"
+                  placeholder="Subject"
+                  className="w-full px-4 py-3 bg-white/5 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
+                />
+                <textarea
+                  rows={4}
+                  placeholder="Your Message"
+                  className="w-full px-4 py-3 bg-white/5 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors resize-none"
+                ></textarea>
+                <button
+                  type="submit"
+                  className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white py-3 rounded-lg font-medium transition-all duration-200 shadow-lg shadow-blue-500/25"
+                >
+                  Send Message
+                </button>
+              </form>
+            </div>
+
+            {/* Map Placeholder */}
+            <div className="bg-white/5 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
+              <h3 className="text-xl font-bold text-white mb-4">Location</h3>
+              <div className="bg-gray-800 rounded-lg h-64 flex items-center justify-center">
+                <div className="text-center">
+                  <MapPin className="w-12 h-12 text-blue-400 mx-auto mb-4" />
+                  <p className="text-gray-300">Interactive Map</p>
+                  <p className="text-sm text-gray-400">MMMUT Campus, Gorakhpur</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* FAQ Section */}
+        <div className="mt-16">
+          <div className="text-center mb-12">
+            <h3 className="text-3xl font-bold text-white mb-4">
+              Frequently Asked Questions
+            </h3>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {[
+              {
+                question: "How do I register for events?",
+                answer: "Simply create an account, browse our events, and click register on any event you're interested in."
+              },
+              {
+                question: "Is there a registration fee?",
+                answer: "Most events are free to participate. Some premium events may have a nominal registration fee."
+              },
+              {
+                question: "Can I participate in multiple events?",
+                answer: "Yes! You can register for as many events as you like, as long as they don't conflict with each other."
+              },
+              {
+                question: "What if I need to cancel my registration?",
+                answer: "You can cancel your registration up to 24 hours before the event starts through your dashboard."
+              }
+            ].map((faq, index) => (
+              <div
+                key={index}
+                className="bg-white/5 backdrop-blur-sm border border-gray-700 rounded-xl p-6 hover:bg-white/10 transition-all duration-300"
+              >
+                <h4 className="text-lg font-semibold text-white mb-3">{faq.question}</h4>
+                <p className="text-gray-300">{faq.answer}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+import React, { useState } from 'react';
+import { Calendar, MapPin, Users, Trophy, Clock, User } from 'lucide-react';
+import { formalEvents, informalEvents } from '../data/events';
+import { useAuth } from '../contexts/AuthContext';
+import { Event } from '../types';
+
+interface EventsProps {
+  onAuthClick: () => void;
+}
+
+export default function Events({ onAuthClick }: EventsProps) {
+  const [activeTab, setActiveTab] = useState<'formal' | 'informal'>('formal');
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+  const { user } = useAuth();
+
+  const currentEvents = activeTab === 'formal' ? formalEvents : informalEvents;
+
+  const handleRegister = (event: Event) => {
+    if (!user) {
+      onAuthClick();
+      return;
+    }
+    // Mock registration logic
+    alert(`Successfully registered for ${event.name}!`);
+  };
+
+  const EventCard = ({ event }: { event: Event }) => (
+    <div className="bg-white/5 backdrop-blur-sm border border-gray-700 rounded-xl p-6 hover:bg-white/10 hover:border-blue-500/30 transition-all duration-300 hover:scale-105">
+      <div className="flex justify-between items-start mb-4">
+        <h3 className="text-xl font-bold text-white mb-2">{event.name}</h3>
+        <div className="flex items-center space-x-2">
+          {event.isTeamEvent && (
+            <span className="bg-purple-500/20 text-purple-300 px-2 py-1 rounded-full text-xs">
+              Team Event
+            </span>
+          )}
+          <span className="bg-blue-500/20 text-blue-300 px-2 py-1 rounded-full text-xs">
+            {event.category}
+          </span>
+        </div>
+      </div>
+      
+      <p className="text-gray-300 mb-4 line-clamp-2">{event.description}</p>
+      
+      <div className="space-y-3 mb-6">
+        <div className="flex items-center text-gray-400 text-sm">
+          <Calendar className="w-4 h-4 mr-2" />
+          {new Date(event.date).toLocaleDateString()} at {event.time}
+        </div>
+        <div className="flex items-center text-gray-400 text-sm">
+          <MapPin className="w-4 h-4 mr-2" />
+          {event.venue}
+        </div>
+        <div className="flex items-center text-gray-400 text-sm">
+          <Users className="w-4 h-4 mr-2" />
+          {event.currentParticipants}/{event.maxParticipants} registered
+        </div>
+        <div className="flex items-center text-gray-400 text-sm">
+          <Trophy className="w-4 h-4 mr-2" />
+          Prize: {event.prizes[0]}
+        </div>
+      </div>
+
+      <div className="flex gap-3">
+        <button
+          onClick={() => setSelectedEvent(event)}
+          className="flex-1 border border-blue-500 text-blue-400 hover:bg-blue-500 hover:text-white px-4 py-2 rounded-lg font-medium transition-all duration-200"
+        >
+          View Details
+        </button>
+        <button
+          onClick={() => handleRegister(event)}
+          className="flex-1 bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white px-4 py-2 rounded-lg font-medium transition-all duration-200 shadow-lg shadow-green-500/25"
+        >
+          Register
+        </button>
+      </div>
+    </div>
+  );
+
+  const EventModal = ({ event, onClose }: { event: Event; onClose: () => void }) => (
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div className="bg-gray-900 border border-gray-700 rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="p-6 border-b border-gray-700">
+          <div className="flex justify-between items-start mb-4">
+            <h2 className="text-2xl font-bold text-white">{event.name}</h2>
+            <button
+              onClick={onClose}
+              className="text-gray-400 hover:text-white transition-colors"
+            >
+              ✕
+            </button>
+          </div>
+          <p className="text-gray-300">{event.description}</p>
+        </div>
+        
+        <div className="p-6 space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-3">
+              <div className="flex items-center text-gray-300">
+                <Calendar className="w-5 h-5 mr-3 text-blue-400" />
+                <div>
+                  <div className="font-medium">Date & Time</div>
+                  <div className="text-sm text-gray-400">
+                    {new Date(event.date).toLocaleDateString()} at {event.time}
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex items-center text-gray-300">
+                <MapPin className="w-5 h-5 mr-3 text-purple-400" />
+                <div>
+                  <div className="font-medium">Venue</div>
+                  <div className="text-sm text-gray-400">{event.venue}</div>
+                </div>
+              </div>
+              
+              <div className="flex items-center text-gray-300">
+                <Users className="w-5 h-5 mr-3 text-green-400" />
+                <div>
+                  <div className="font-medium">Participants</div>
+                  <div className="text-sm text-gray-400">
+                    {event.currentParticipants}/{event.maxParticipants} registered
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="space-y-3">
+              <div className="flex items-center text-gray-300">
+                <Clock className="w-5 h-5 mr-3 text-yellow-400" />
+                <div>
+                  <div className="font-medium">Registration Deadline</div>
+                  <div className="text-sm text-gray-400">
+                    {new Date(event.registrationDeadline).toLocaleDateString()}
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex items-center text-gray-300">
+                <User className="w-5 h-5 mr-3 text-indigo-400" />
+                <div>
+                  <div className="font-medium">Event Type</div>
+                  <div className="text-sm text-gray-400">
+                    {event.isTeamEvent ? `Team (${event.teamSize} members)` : 'Individual'}
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex items-center text-gray-300">
+                <Trophy className="w-5 h-5 mr-3 text-yellow-400" />
+                <div>
+                  <div className="font-medium">Prizes</div>
+                  <div className="text-sm text-gray-400">
+                    {event.prizes.join(', ')}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div>
+            <h3 className="text-lg font-semibold text-white mb-3">Rules & Guidelines</h3>
+            <ul className="list-disc list-inside space-y-2 text-gray-300">
+              {event.rules.map((rule, index) => (
+                <li key={index} className="text-sm">{rule}</li>
+              ))}
+            </ul>
+          </div>
+          
+          <div>
+            <h3 className="text-lg font-semibold text-white mb-3">Event Coordinator</h3>
+            <div className="bg-white/5 rounded-lg p-4">
+              <div className="font-medium text-white">{event.coordinator.name}</div>
+              <div className="text-sm text-gray-400">{event.coordinator.contact}</div>
+            </div>
+          </div>
+          
+          <div className="flex gap-4 pt-4">
+            <button
+              onClick={onClose}
+              className="flex-1 border border-gray-600 text-gray-300 hover:bg-gray-700 px-6 py-3 rounded-lg font-medium transition-all duration-200"
+            >
+              Close
+            </button>
+            <button
+              onClick={() => handleRegister(event)}
+              className="flex-1 bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 shadow-lg shadow-green-500/25"
+            >
+              Register Now
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <section id="events" className="py-20 bg-gradient-to-br from-gray-900 to-blue-900 relative">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-16">
+          <h2 className="text-4xl sm:text-5xl font-bold mb-6">
+            <span className="bg-gradient-to-r from-blue-400 via-purple-500 to-green-400 bg-clip-text text-transparent">
+              Our Events
+            </span>
+          </h2>
+          <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
+            Choose from our exciting lineup of formal and informal tech events. 
+            Challenge yourself, showcase your skills, and win amazing prizes!
+          </p>
+        </div>
+
+        {/* Event Category Tabs */}
+        <div className="flex justify-center mb-12">
+          <div className="bg-white/5 backdrop-blur-sm border border-gray-700 rounded-xl p-2">
+            <button
+              onClick={() => setActiveTab('formal')}
+              className={`px-8 py-3 rounded-lg font-medium transition-all duration-200 ${
+                activeTab === 'formal'
+                  ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg shadow-blue-500/25'
+                  : 'text-gray-300 hover:text-white hover:bg-white/10'
+              }`}
+            >
+              Formal Events
+            </button>
+            <button
+              onClick={() => setActiveTab('informal')}
+              className={`px-8 py-3 rounded-lg font-medium transition-all duration-200 ${
+                activeTab === 'informal'
+                  ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg shadow-green-500/25'
+                  : 'text-gray-300 hover:text-white hover:bg-white/10'
+              }`}
+            >
+              Informal Events
+            </button>
+          </div>
+        </div>
+
+        {/* Events Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {currentEvents.map((event) => (
+            <EventCard key={event.id} event={event} />
+          ))}
+        </div>
+
+        {/* Event Details Modal */}
+        {selectedEvent && (
+          <EventModal
+            event={selectedEvent}
+            onClose={() => setSelectedEvent(null)}
+          />
+        )}
+      </div>
+    </section>
+  );
+}
+import React from 'react';
+import { Facebook, Twitter, Instagram, Youtube, Mail, Phone, MapPin } from 'lucide-react';
+
+export default function Footer() {
+  const currentYear = new Date().getFullYear();
+
+  const quickLinks = [
+    { name: 'Home', href: '#hero' },
+    { name: 'Events', href: '#events' },
+    { name: 'About', href: '#about' },
+    { name: 'Team', href: '#team' },
+    { name: 'Contact', href: '#contact' }
+  ];
+
+  const socialLinks = [
+    { icon: Facebook, name: 'Facebook', url: '#' },
+    { icon: Twitter, name: 'Twitter', url: '#' },
+    { icon: Instagram, name: 'Instagram', url: '#' },
+    { icon: Youtube, name: 'YouTube', url: '#' }
+  ];
+
+  const handleLinkClick = (href: string) => {
+    const element = document.querySelector(href);
+    element?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  return (
+    <footer className="bg-gray-900 border-t border-gray-800">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {/* Brand Section */}
+          <div className="lg:col-span-2">
+            <div className="text-3xl font-bold bg-gradient-to-r from-blue-400 via-purple-500 to-green-400 bg-clip-text text-transparent mb-4">
+              TechnoKratos
+            </div>
+            <p className="text-gray-300 mb-6 max-w-md leading-relaxed">
+              The premier techno-cultural festival of MMMUT Gorakhpur, bringing together 
+              innovation, creativity, and talent from across the nation.
+            </p>
+            <div className="space-y-3">
+              <div className="flex items-center text-gray-300">
+                <MapPin className="w-4 h-4 mr-3 text-blue-400" />
+                <span className="text-sm">MMMUT Gorakhpur, U.P. - 273010</span>
+              </div>
+              <div className="flex items-center text-gray-300">
+                <Phone className="w-4 h-4 mr-3 text-green-400" />
+                <span className="text-sm">+91-551-2273491</span>
+              </div>
+              <div className="flex items-center text-gray-300">
+                <Mail className="w-4 h-4 mr-3 text-purple-400" />
+                <span className="text-sm">techno.kratos@mmmut.ac.in</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Quick Links */}
+          <div>
+            <h3 className="text-lg font-semibold text-white mb-6">Quick Links</h3>
+            <ul className="space-y-3">
+              {quickLinks.map((link) => (
+                <li key={link.name}>
+                  <button
+                    onClick={() => handleLinkClick(link.href)}
+                    className="text-gray-300 hover:text-blue-400 transition-colors text-sm"
+                  >
+                    {link.name}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Connect With Us */}
+          <div>
+            <h3 className="text-lg font-semibold text-white mb-6">Connect With Us</h3>
+            <div className="flex space-x-4 mb-6">
+              {socialLinks.map((social) => (
+                <a
+                  key={social.name}
+                  href={social.url}
+                  className="bg-white/5 hover:bg-white/10 p-3 rounded-lg transition-all duration-200 hover:scale-110 group"
+                >
+                  <social.icon className="w-5 h-5 text-gray-400 group-hover:text-blue-400 transition-colors" />
+                </a>
+              ))}
+            </div>
+            <div className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-white/10 rounded-lg p-4">
+              <h4 className="text-white font-medium mb-2">Stay Updated</h4>
+              <p className="text-gray-400 text-xs mb-3">
+                Get the latest updates about TechnoKratos
+              </p>
+              <div className="flex">
+                <input
+                  type="email"
+                  placeholder="Your email"
+                  className="flex-1 px-3 py-2 bg-white/5 border border-gray-600 rounded-l-lg text-white placeholder-gray-400 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
+                />
+                <button className="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-r-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-200 text-sm">
+                  Subscribe
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom Section */}
+        <div className="border-t border-gray-800 mt-12 pt-8">
+          <div className="flex flex-col sm:flex-row justify-between items-center">
+            <div className="text-gray-400 text-sm mb-4 sm:mb-0">
+              © {currentYear} TechnoKratos, MMMUT Gorakhpur. All rights reserved.
+            </div>
+            <div className="flex space-x-6 text-sm">
+              <button className="text-gray-400 hover:text-white transition-colors">
+                Privacy Policy
+              </button>
+              <button className="text-gray-400 hover:text-white transition-colors">
+                Terms of Service
+              </button>
+              <button className="text-gray-400 hover:text-white transition-colors">
+                Code of Conduct
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+}
+import React, { useState } from 'react';
+import { Menu, X, User, LogOut } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
+
+interface HeaderProps {
+  onAuthClick: () => void;
+  onSectionClick: (section: string) => void;
+}
+
+export default function Header({ onAuthClick, onSectionClick }: HeaderProps) {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { user, logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    setIsMenuOpen(false);
+  };
+
+  const navItems = [
+    { name: 'Home', section: 'hero' },
+    { name: 'Events', section: 'events' },
+    { name: 'About', section: 'about' },
+    { name: 'Team', section: 'team' },
+    { name: 'Contact', section: 'contact' }
+  ];
+
+  return (
+    <header className="fixed top-0 left-0 right-0 z-50 bg-gray-900/90 backdrop-blur-md border-b border-blue-500/20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-16">
+          {/* Logo */}
+          <div className="flex items-center">
+            <div className="text-2xl font-bold bg-gradient-to-r from-blue-400 via-purple-500 to-green-400 bg-clip-text text-transparent">
+              TechnoKratos
+            </div>
+          </div>
+
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center space-x-8">
+            {navItems.map((item) => (
+              <button
+                key={item.name}
+                onClick={() => onSectionClick(item.section)}
+                className="text-gray-300 hover:text-white hover:bg-blue-500/10 px-3 py-2 rounded-lg transition-all duration-200"
+              >
+                {item.name}
+              </button>
+            ))}
+          </nav>
+
+          {/* User Actions */}
+          <div className="hidden md:flex items-center space-x-4">
+            {user ? (
+              <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-2 text-sm text-gray-300">
+                  <User className="w-4 h-4" />
+                  <span>{user.name}</span>
+                  <span className="text-xs bg-blue-500/20 px-2 py-1 rounded-full">
+                    {user.role}
+                  </span>
+                </div>
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center space-x-1 text-gray-300 hover:text-white hover:bg-red-500/10 px-3 py-2 rounded-lg transition-all duration-200"
+                >
+                  <LogOut className="w-4 h-4" />
+                  <span>Logout</span>
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={onAuthClick}
+                className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-6 py-2 rounded-lg font-medium transition-all duration-200 shadow-lg shadow-blue-500/25"
+              >
+                Login
+              </button>
+            )}
+          </div>
+
+          {/* Mobile Menu Button */}
+          <button
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className="md:hidden text-gray-300 hover:text-white transition-colors duration-200"
+          >
+            {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
+        </div>
+
+        {/* Mobile Menu */}
+        {isMenuOpen && (
+          <div className="md:hidden absolute top-16 left-0 right-0 bg-gray-900/95 backdrop-blur-md border-b border-blue-500/20">
+            <div className="px-4 py-4 space-y-2">
+              {navItems.map((item) => (
+                <button
+                  key={item.name}
+                  onClick={() => {
+                    onSectionClick(item.section);
+                    setIsMenuOpen(false);
+                  }}
+                  className="block w-full text-left text-gray-300 hover:text-white hover:bg-blue-500/10 px-3 py-2 rounded-lg transition-all duration-200"
+                >
+                  {item.name}
+                </button>
+              ))}
+              <div className="pt-4 border-t border-gray-700">
+                {user ? (
+                  <div className="space-y-2">
+                    <div className="flex items-center space-x-2 text-sm text-gray-300 px-3 py-2">
+                      <User className="w-4 h-4" />
+                      <span>{user.name}</span>
+                      <span className="text-xs bg-blue-500/20 px-2 py-1 rounded-full">
+                        {user.role}
+                      </span>
+                    </div>
+                    <button
+                      onClick={handleLogout}
+                      className="flex items-center space-x-1 text-gray-300 hover:text-white hover:bg-red-500/10 px-3 py-2 rounded-lg transition-all duration-200 w-full"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      <span>Logout</span>
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => {
+                      onAuthClick();
+                      setIsMenuOpen(false);
+                    }}
+                    className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-6 py-2 rounded-lg font-medium transition-all duration-200 shadow-lg shadow-blue-500/25"
+                  >
+                    Login
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </header>
+  );
+}
+import React, { useState, useEffect } from 'react';
+import { Calendar, MapPin, Users, Trophy } from 'lucide-react';
+
+export default function Hero() {
+  const [timeLeft, setTimeLeft] = useState({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0
+  });
+
+  useEffect(() => {
+    const eventDate = new Date('2024-03-15T00:00:00').getTime();
+    
+    const timer = setInterval(() => {
+      const now = new Date().getTime();
+      const distance = eventDate - now;
+      
+      if (distance > 0) {
+        setTimeLeft({
+          days: Math.floor(distance / (1000 * 60 * 60 * 24)),
+          hours: Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+          minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
+          seconds: Math.floor((distance % (1000 * 60)) / 1000)
+        });
+      }
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  return (
+    <section id="hero" className="min-h-screen flex items-center justify-center relative overflow-hidden bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900">
+      {/* Animated Background */}
+      <div className="absolute inset-0">
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-green-500/10 rounded-full blur-3xl animate-pulse delay-2000"></div>
+      </div>
+
+      <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
+        {/* Main Title */}
+        <div className="mb-8">
+          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold mb-4">
+            <span className="bg-gradient-to-r from-blue-400 via-purple-500 to-green-400 bg-clip-text text-transparent animate-pulse">
+              TechnoKratos
+            </span>
+          </h1>
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl text-gray-300 mb-6">
+            Annual Techno-Cultural Festival
+          </h2>
+          <p className="text-lg sm:text-xl text-gray-400 max-w-3xl mx-auto leading-relaxed">
+            MMMUT Gorakhpur presents the ultimate convergence of technology and culture. 
+            Join us for an extraordinary celebration of innovation, creativity, and talent.
+          </p>
+        </div>
+
+        {/* Event Info Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+          <div className="bg-white/5 backdrop-blur-sm border border-blue-500/20 rounded-xl p-6 hover:bg-white/10 transition-all duration-300 hover:scale-105">
+            <Calendar className="w-8 h-8 text-blue-400 mx-auto mb-3" />
+            <h3 className="text-white font-semibold mb-2">Event Dates</h3>
+            <p className="text-gray-300 text-sm">March 15-17, 2024</p>
+          </div>
+          <div className="bg-white/5 backdrop-blur-sm border border-purple-500/20 rounded-xl p-6 hover:bg-white/10 transition-all duration-300 hover:scale-105">
+            <MapPin className="w-8 h-8 text-purple-400 mx-auto mb-3" />
+            <h3 className="text-white font-semibold mb-2">Venue</h3>
+            <p className="text-gray-300 text-sm">MMMUT Campus, Gorakhpur</p>
+          </div>
+          <div className="bg-white/5 backdrop-blur-sm border border-green-500/20 rounded-xl p-6 hover:bg-white/10 transition-all duration-300 hover:scale-105">
+            <Users className="w-8 h-8 text-green-400 mx-auto mb-3" />
+            <h3 className="text-white font-semibold mb-2">Participants</h3>
+            <p className="text-gray-300 text-sm">500+ Expected</p>
+          </div>
+          <div className="bg-white/5 backdrop-blur-sm border border-yellow-500/20 rounded-xl p-6 hover:bg-white/10 transition-all duration-300 hover:scale-105">
+            <Trophy className="w-8 h-8 text-yellow-400 mx-auto mb-3" />
+            <h3 className="text-white font-semibold mb-2">Prize Pool</h3>
+            <p className="text-gray-300 text-sm">₹1,00,000+</p>
+          </div>
+        </div>
+
+        {/* Countdown Timer */}
+        <div className="mb-12">
+          <h3 className="text-2xl font-bold text-white mb-6">Event Starts In</h3>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-2xl mx-auto">
+            {Object.entries(timeLeft).map(([unit, value]) => (
+              <div key={unit} className="bg-gradient-to-br from-blue-500/20 to-purple-500/20 backdrop-blur-sm border border-white/10 rounded-xl p-4 hover:scale-105 transition-transform duration-300">
+                <div className="text-3xl sm:text-4xl font-bold text-white mb-2">{value}</div>
+                <div className="text-gray-300 text-sm uppercase tracking-wider">{unit}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* CTA Buttons */}
+        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+          <button 
+            onClick={() => document.getElementById('events')?.scrollIntoView({ behavior: 'smooth' })}
+            className="px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold rounded-xl shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 transition-all duration-300 hover:scale-105"
+          >
+            Explore Events
+          </button>
+          <button 
+            onClick={() => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })}
+            className="px-8 py-4 border-2 border-green-500 text-green-400 hover:bg-green-500 hover:text-white font-bold rounded-xl transition-all duration-300 hover:scale-105"
+          >
+            Learn More
+          </button>
+        </div>
+      </div>
+    </section>
+  );
+}
+import React from 'react';
+import { Mail, Phone, Linkedin } from 'lucide-react';
+
+export default function Team() {
+  const teamMembers = [
+    {
+      name: 'Dr. Rajesh Kumar',
+      role: 'Faculty Coordinator',
+      department: 'Computer Science & Engineering',
+      image: 'https://images.pexels.com/photos/2182970/pexels-photo-2182970.jpeg?auto=compress&cs=tinysrgb&w=400',
+      email: 'rajesh.kumar@mmmut.ac.in',
+      phone: '+91-9876543210'
+    },
+    {
+      name: 'Priya Sharma',
+      role: 'Event Manager',
+      department: 'Electronics & Communication',
+      image: 'https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=400',
+      email: 'priya.sharma@student.mmmut.ac.in',
+      phone: '+91-9876543211'
+    },
+    {
+      name: 'Arjun Patel',
+      role: 'Technical Head',
+      department: 'Information Technology',
+      image: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=400',
+      email: 'arjun.patel@student.mmmut.ac.in',
+      phone: '+91-9876543212'
+    },
+    {
+      name: 'Sneha Gupta',
+      role: 'Cultural Head',
+      department: 'Mechanical Engineering',
+      image: 'https://images.pexels.com/photos/3184338/pexels-photo-3184338.jpeg?auto=compress&cs=tinysrgb&w=400',
+      email: 'sneha.gupta@student.mmmut.ac.in',
+      phone: '+91-9876543213'
+    },
+    {
+      name: 'Rohit Singh',
+      role: 'Marketing Head',
+      department: 'Civil Engineering',
+      image: 'https://images.pexels.com/photos/2182969/pexels-photo-2182969.jpeg?auto=compress&cs=tinysrgb&w=400',
+      email: 'rohit.singh@student.mmmut.ac.in',
+      phone: '+91-9876543214'
+    },
+    {
+      name: 'Anjali Verma',
+      role: 'Finance Head',
+      department: 'Electrical Engineering',
+      image: 'https://images.pexels.com/photos/3184292/pexels-photo-3184292.jpeg?auto=compress&cs=tinysrgb&w=400',
+      email: 'anjali.verma@student.mmmut.ac.in',
+      phone: '+91-9876543215'
+    }
+  ];
+
+  return (
+    <section id="team" className="py-20 bg-gradient-to-br from-gray-900 to-purple-900 relative">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-16">
+          <h2 className="text-4xl sm:text-5xl font-bold mb-6">
+            <span className="bg-gradient-to-r from-blue-400 via-purple-500 to-green-400 bg-clip-text text-transparent">
+              Meet Our Team
+            </span>
+          </h2>
+          <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
+            The passionate individuals behind TechnoKratos who work tirelessly 
+            to make this festival a grand success.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {teamMembers.map((member, index) => (
+            <div
+              key={index}
+              className="bg-white/5 backdrop-blur-sm border border-gray-700 rounded-xl p-6 hover:bg-white/10 hover:border-blue-500/30 transition-all duration-300 hover:scale-105 group"
+            >
+              <div className="relative mb-6">
+                <img
+                  src={member.image}
+                  alt={member.name}
+                  className="w-24 h-24 rounded-full mx-auto object-cover border-4 border-blue-500/20 group-hover:border-blue-500/50 transition-all duration-300"
+                />
+                <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              </div>
+              
+              <div className="text-center mb-6">
+                <h3 className="text-xl font-bold text-white mb-2">{member.name}</h3>
+                <p className="text-blue-400 font-medium mb-1">{member.role}</p>
+                <p className="text-gray-400 text-sm">{member.department}</p>
+              </div>
+              
+              <div className="space-y-3">
+                <div className="flex items-center text-gray-300 text-sm">
+                  <Mail className="w-4 h-4 mr-3 text-blue-400 flex-shrink-0" />
+                  <a 
+                    href={`mailto:${member.email}`}
+                    className="hover:text-blue-400 transition-colors truncate"
+                  >
+                    {member.email}
+                  </a>
+                </div>
+                <div className="flex items-center text-gray-300 text-sm">
+                  <Phone className="w-4 h-4 mr-3 text-green-400 flex-shrink-0" />
+                  <a 
+                    href={`tel:${member.phone}`}
+                    className="hover:text-green-400 transition-colors"
+                  >
+                    {member.phone}
+                  </a>
+                </div>
+              </div>
+              
+              <div className="flex justify-center mt-6">
+                <button className="flex items-center space-x-2 text-gray-400 hover:text-blue-400 transition-colors">
+                  <Linkedin className="w-4 h-4" />
+                  <span className="text-sm">Connect</span>
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Contact CTA */}
+        <div className="text-center mt-16">
+          <div className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 backdrop-blur-sm border border-white/10 rounded-xl p-8 max-w-2xl mx-auto">
+            <h3 className="text-2xl font-bold text-white mb-4">
+              Want to Join Our Team?
+            </h3>
+            <p className="text-gray-300 mb-6">
+              We're always looking for passionate students who want to contribute 
+              to making TechnoKratos bigger and better every year.
+            </p>
+            <button className="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white px-8 py-3 rounded-lg font-medium transition-all duration-200 shadow-lg shadow-green-500/25">
+              Get Involved
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { User } from '../types';
+
+interface AuthContextType {
+  user: User | null;
+  login: (email: string, password: string) => Promise<boolean>;
+  signup: (userData: Omit<User, 'id' | 'role'> & { password: string }) => Promise<boolean>;
+  logout: () => void;
+  isLoading: boolean;
+}
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // Check for stored user session
+    const storedUser = localStorage.getItem('techno-kratos-user');
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+    setIsLoading(false);
+  }, []);
+
+  const login = async (email: string, password: string): Promise<boolean> => {
+    setIsLoading(true);
+    try {
+      // Mock authentication - replace with real API
+      const mockUser: User = {
+        id: '1',
+        email,
+        name: email === 'admin@mmmut.ac.in' ? 'Admin' : 'Student User',
+        role: email === 'admin@mmmut.ac.in' ? 'admin' : 'student',
+        rollNo: email !== 'admin@mmmut.ac.in' ? '2021CSE001' : undefined,
+        college: 'MMMUT Gorakhpur'
+      };
+      
+      setUser(mockUser);
+      localStorage.setItem('techno-kratos-user', JSON.stringify(mockUser));
+      setIsLoading(false);
+      return true;
+    } catch (error) {
+      setIsLoading(false);
+      return false;
+    }
+  };
+
+  const signup = async (userData: Omit<User, 'id' | 'role'> & { password: string }): Promise<boolean> => {
+    setIsLoading(true);
+    try {
+      // Mock signup - replace with real API
+      const newUser: User = {
+        ...userData,
+        id: Date.now().toString(),
+        role: 'student'
+      };
+      
+      setUser(newUser);
+      localStorage.setItem('techno-kratos-user', JSON.stringify(newUser));
+      setIsLoading(false);
+      return true;
+    } catch (error) {
+      setIsLoading(false);
+      return false;
+    }
+  };
+
+  const logout = () => {
+    setUser(null);
+    localStorage.removeItem('techno-kratos-user');
+  };
+
+  return (
+    <AuthContext.Provider value={{ user, login, signup, logout, isLoading }}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+export function useAuth() {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+}
+import { Event } from '../types';
+
+export const formalEvents: Event[] = [
+  {
+    id: 'debate',
+    name: 'Debate',
+    category: 'formal',
+    description: 'Engage in intellectual discourse on contemporary tech and social issues',
+    date: '2024-03-15',
+    time: '10:00 AM',
+    venue: 'Auditorium Hall',
+    maxParticipants: 50,
+    currentParticipants: 23,
+    isTeamEvent: false,
+    registrationDeadline: '2024-03-12',
+    prizes: ['₹5000', '₹3000', '₹2000'],
+    rules: [
+      'Maximum 5 minutes per speaker',
+      'Topics will be announced 30 minutes before',
+      'No electronic devices allowed',
+      'Dress code: Formal'
+    ],
+    coordinator: {
+      name: 'Dr. Priya Sharma',
+      contact: '+91-9876543210'
+    }
+  },
+  {
+    id: 'tech-presentation',
+    name: 'Technical Presentation',
+    category: 'formal',
+    description: 'Present your innovative ideas and technical solutions',
+    date: '2024-03-15',
+    time: '2:00 PM',
+    venue: 'Conference Room A',
+    maxParticipants: 30,
+    currentParticipants: 18,
+    isTeamEvent: true,
+    teamSize: 3,
+    registrationDeadline: '2024-03-12',
+    prizes: ['₹8000', '₹5000', '₹3000'],
+    rules: [
+      'Presentation time: 10 minutes + 5 minutes Q&A',
+      'Team size: 2-3 members',
+      'PowerPoint presentation required',
+      'Focus on innovation and feasibility'
+    ],
+    coordinator: {
+      name: 'Prof. Rajesh Kumar',
+      contact: '+91-9876543211'
+    }
+  },
+  {
+    id: 'creative-writing',
+    name: 'Creative Writing',
+    category: 'formal',
+    description: 'Express your creativity through the power of words',
+    date: '2024-03-16',
+    time: '11:00 AM',
+    venue: 'Library Hall',
+    maxParticipants: 40,
+    currentParticipants: 15,
+    isTeamEvent: false,
+    registrationDeadline: '2024-03-13',
+    prizes: ['₹4000', '₹2500', '₹1500'],
+    rules: [
+      'Time limit: 90 minutes',
+      'Topic will be provided on the spot',
+      'Handwritten entries only',
+      'Word limit: 500-800 words'
+    ],
+    coordinator: {
+      name: 'Dr. Anjali Verma',
+      contact: '+91-9876543212'
+    }
+  },
+  {
+    id: 'bug-buster',
+    name: 'Bug Buster',
+    category: 'formal',
+    description: 'Test your debugging skills and code optimization abilities',
+    date: '2024-03-16',
+    time: '3:00 PM',
+    venue: 'Computer Lab 1',
+    maxParticipants: 60,
+    currentParticipants: 45,
+    isTeamEvent: false,
+    registrationDeadline: '2024-03-13',
+    prizes: ['₹6000', '₹4000', '₹2500'],
+    rules: [
+      'Duration: 2 hours',
+      'Languages: C/C++, Java, Python',
+      'Individual participation only',
+      'Debugging tools allowed'
+    ],
+    coordinator: {
+      name: 'Prof. Amit Singh',
+      contact: '+91-9876543213'
+    }
+  },
+  {
+    id: 'byte-burst',
+    name: 'Byte Burst (Hackathon)',
+    category: 'formal',
+    description: '24-hour hackathon to build innovative tech solutions',
+    date: '2024-03-17',
+    time: '6:00 PM',
+    venue: 'Innovation Lab',
+    maxParticipants: 80,
+    currentParticipants: 67,
+    isTeamEvent: true,
+    teamSize: 4,
+    registrationDeadline: '2024-03-14',
+    prizes: ['₹15000', '₹10000', '₹7000'],
+    rules: [
+      'Duration: 24 hours',
+      'Team size: 2-4 members',
+      'All tech stacks allowed',
+      'Internet access provided'
+    ],
+    coordinator: {
+      name: 'Dr. Vikash Yadav',
+      contact: '+91-9876543214'
+    }
+  }
+];
+
+export const informalEvents: Event[] = [
+  {
+    id: 'gaming',
+    name: 'Gaming Championship',
+    category: 'informal',
+    description: 'Battle it out in popular gaming tournaments',
+    date: '2024-03-15',
+    time: '5:00 PM',
+    venue: 'Gaming Arena',
+    maxParticipants: 100,
+    currentParticipants: 78,
+    isTeamEvent: true,
+    teamSize: 5,
+    registrationDeadline: '2024-03-12',
+    prizes: ['₹8000', '₹5000', '₹3000'],
+    rules: [
+      'Games: PUBG Mobile, Valorant, FIFA',
+      'Team tournaments and solo battles',
+      'Own devices required for mobile games',
+      'Fair play policy strictly enforced'
+    ],
+    coordinator: {
+      name: 'Arjun Patel',
+      contact: '+91-9876543215'
+    }
+  },
+  {
+    id: 'treasure-hunt',
+    name: 'Tech Treasure Hunt',
+    category: 'informal',
+    description: 'Solve tech puzzles and find hidden treasures across campus',
+    date: '2024-03-16',
+    time: '9:00 AM',
+    venue: 'Campus Wide',
+    maxParticipants: 60,
+    currentParticipants: 32,
+    isTeamEvent: true,
+    teamSize: 3,
+    registrationDeadline: '2024-03-13',
+    prizes: ['₹6000', '₹4000', '₹2000'],
+    rules: [
+      'Team size: 2-3 members',
+      'Duration: 3 hours',
+      'Smartphones allowed for QR scanning',
+      'All clues are tech-related'
+    ],
+    coordinator: {
+      name: 'Priya Gupta',
+      contact: '+91-9876543216'
+    }
+  },
+  {
+    id: 'meme-contest',
+    name: 'Tech Meme Contest',
+    category: 'informal',
+    description: 'Create hilarious tech memes and win amazing prizes',
+    date: '2024-03-16',
+    time: '1:00 PM',
+    venue: 'Online Submission',
+    maxParticipants: 200,
+    currentParticipants: 145,
+    isTeamEvent: false,
+    registrationDeadline: '2024-03-14',
+    prizes: ['₹3000', '₹2000', '₹1000'],
+    rules: [
+      'Original content only',
+      'Tech-related themes',
+      'Submit via event portal',
+      'Public voting + jury evaluation'
+    ],
+    coordinator: {
+      name: 'Rohit Sharma',
+      contact: '+91-9876543217'
+    }
+  },
+  {
+    id: 'lan-battle',
+    name: 'LAN Battle Arena',
+    category: 'informal',
+    description: 'Classic LAN gaming with retro and modern games',
+    date: '2024-03-17',
+    time: '2:00 PM',
+    venue: 'Computer Lab 2',
+    maxParticipants: 40,
+    currentParticipants: 28,
+    isTeamEvent: false,
+    registrationDeadline: '2024-03-14',
+    prizes: ['₹4000', '₹2500', '₹1500'],
+    rules: [
+      'Counter-Strike, Age of Empires, etc.',
+      'All equipment provided',
+      'Tournament format',
+      'No external software allowed'
+    ],
+    coordinator: {
+      name: 'Karan Singh',
+      contact: '+91-9876543218'
+    }
+  }
+];
+export interface User {
+  id: string;
+  email: string;
+  name: string;
+  rollNo?: string;
+  college?: string;
+  role: 'student' | 'admin';
+}
+
+export interface Event {
+  id: string;
+  name: string;
+  category: 'formal' | 'informal';
+  description: string;
+  date: string;
+  time: string;
+  venue: string;
+  maxParticipants: number;
+  currentParticipants: number;
+  isTeamEvent: boolean;
+  teamSize?: number;
+  registrationDeadline: string;
+  prizes: string[];
+  rules: string[];
+  coordinator: {
+    name: string;
+    contact: string;
+  };
+}
+
+export interface Registration {
+  id: string;
+  eventId: string;
+  userId: string;
+  teamName?: string;
+  teamMembers?: string[];
+  registrationDate: string;
+  status: 'registered' | 'attended' | 'winner';
+}
